@@ -1,4 +1,4 @@
-## ∑«π °“√· ¥ßº≈ÀπÈ“ Product
+## ‡∏ó‡∏ß‡∏ô ‡∏Å‡∏≤‡∏£‡πÅ‡∏™‡∏î‡∏á‡∏ú‡∏•‡∏´‡∏ô‡πâ‡∏≤ Product
 1.    Route::resource('products', ProductController::class); 
 2.    php artisan route:list --path=products
 3.     
@@ -52,7 +52,7 @@ import { Head } from '@inertiajs/vue3';
     </NavLink>
 ```
 
-∑” Resource
+‡∏ó‡∏≥ Resource
 ```bash
 php artisan make:resource CategoryResource
 ```
@@ -67,7 +67,7 @@ php artisan make:resource ProductResource
 ```
 
 ```php
-        //¬—ß‰¡Ë∑” mutator, accessor
+        //‡∏¢‡∏±‡∏á‡πÑ‡∏°‡πà‡∏ó‡∏≥ mutator, accessor
         $price = $this->price / 100;
         return [
             'id' => $this->id,
@@ -118,7 +118,7 @@ defineProps({
 <tr v-for="product in products.data" :key="product.id">
 </template>
 ```
-‡√’¬°„™È Pagination.vue
+‡πÄ‡∏£‡∏µ‡∏¢‡∏Å‡πÉ‡∏ä‡πâ Pagination.vue
 ```php
 import Pagination from '@/Components/Pagination.vue'
 
@@ -168,5 +168,7 @@ defineProps({
     </nav>
 </template>
 ```
+
+## ‡∏ó‡∏≥ Search
 
 

@@ -4,8 +4,8 @@
 ```php
 'category' => CategoryResource::make($this->whenLoaded('category')),
 ```
-- ใช้ `Resource::make(...)`
-- ถ้า relation ยังไม่ได้ `with('category')` ? field จะเป็น `null`
+- เนเธเน `Resource::make(...)`
+- เธ–เนเธฒ relation เธขเธฑเธเนเธกเนเนเธ”เน `with('category')` ? field เธเธฐเน€เธเนเธ `null`
 
 ---
 
@@ -13,74 +13,74 @@
 ```php
 'products' => ProductResource::collection($this->whenLoaded('products')),
 ```
-- ใช้ `Resource::collection(...)`
-- คืน array ของ resource
+- เนเธเน `Resource::collection(...)`
+- เธเธทเธ array เธเธญเธ resource
 
 ---
 
-## 3) ดึง field เดียวจาก relation
+## 3) เธ”เธถเธ field เน€เธ”เธตเธขเธงเธเธฒเธ relation
 ```php
 'category_name' => $this->whenLoaded('category', fn () => $this->category->name),
 ```
-- คืนค่า field เดียว เช่น `name`
-- ใช้เวลาที่ไม่อยากส่ง resource ซ้อน
+- เธเธทเธเธเนเธฒ field เน€เธ”เธตเธขเธง เน€เธเนเธ `name`
+- เนเธเนเน€เธงเธฅเธฒเธ—เธตเนเนเธกเนเธญเธขเธฒเธเธชเนเธ resource เธเนเธญเธ
 
 ---
 
-## 4) ซ่อน relation ถ้าไม่ได้โหลด
+## 4) เธเนเธญเธ relation เธ–เนเธฒเนเธกเนเนเธ”เนเนเธซเธฅเธ”
 ```php
 'category' => $this->when(
     $this->relationLoaded('category'),
     fn () => new CategoryResource($this->category)
 ),
 ```
-- ใช้ `relationLoaded()` แทน `whenLoaded()` ถ้าอยากควบคุมชัดเจน
+- เนเธเน `relationLoaded()` เนเธ—เธ `whenLoaded()` เธ–เนเธฒเธญเธขเธฒเธเธเธงเธเธเธธเธกเธเธฑเธ”เน€เธเธ
 
 ---
 
 ## 5) Tips
-- ใช้ `with(['category','user'])` ใน Controller เพื่อป้องกัน N+1
-- ใช้ `make()` เมื่อเป็น object เดียว
-- ใช้ `collection()` เมื่อเป็น array/collection
-- ใช้ `whenLoaded()` เมื่อไม่แน่ใจว่า relation ถูกโหลดหรือยัง
-- ใช้ `when()` + `relationLoaded()` เมื่ออยากเงื่อนไขละเอียดกว่า
+- เนเธเน `with(['category','user'])` เนเธ Controller เน€เธเธทเนเธญเธเนเธญเธเธเธฑเธ N+1
+- เนเธเน `make()` เน€เธกเธทเนเธญเน€เธเนเธ object เน€เธ”เธตเธขเธง
+- เนเธเน `collection()` เน€เธกเธทเนเธญเน€เธเนเธ array/collection
+- เนเธเน `whenLoaded()` เน€เธกเธทเนเธญเนเธกเนเนเธเนเนเธเธงเนเธฒ relation เธ–เธนเธเนเธซเธฅเธ”เธซเธฃเธทเธญเธขเธฑเธ
+- เนเธเน `when()` + `relationLoaded()` เน€เธกเธทเนเธญเธญเธขเธฒเธเน€เธเธทเนเธญเธเนเธเธฅเธฐเน€เธญเธตเธขเธ”เธเธงเนเธฒ
 
 ---
-# Laravel Resource — กรณีต้องใช้ `collection()` และตาราง Mapping Relation
+# Laravel Resource โ€” เธเธฃเธ“เธตเธ•เนเธญเธเนเธเน `collection()` เนเธฅเธฐเธ•เธฒเธฃเธฒเธ Mapping Relation
 
-## 1) กรณีที่ต้องทำ `Resource::collection()`
+## 1) เธเธฃเธ“เธตเธ—เธตเนเธ•เนเธญเธเธ—เธณ `Resource::collection()`
 
-ใช้เมื่อ relation คืนค่ามาเป็น **หลาย record** และเราต้องการส่งข้อมูลลูกทั้งหมดไปที่ frontend เช่น:
+เนเธเนเน€เธกเธทเนเธญ relation เธเธทเธเธเนเธฒเธกเธฒเน€เธเนเธ **เธซเธฅเธฒเธข record** เนเธฅเธฐเน€เธฃเธฒเธ•เนเธญเธเธเธฒเธฃเธชเนเธเธเนเธญเธกเธนเธฅเธฅเธนเธเธ—เธฑเนเธเธซเธกเธ”เนเธเธ—เธตเน frontend เน€เธเนเธ:
 
 - **Category ? Products (hasMany)**  
   ```php
   'products' => ProductResource::collection($this->whenLoaded('products')),
   ```
-  แสดงสินค้าทั้งหมดในหมวดหมู่
+  เนเธชเธ”เธเธชเธดเธเธเนเธฒเธ—เธฑเนเธเธซเธกเธ”เนเธเธซเธกเธงเธ”เธซเธกเธนเน
 
 - **Order ? Items (hasMany)**  
   ```php
   'items' => OrderItemResource::collection($this->whenLoaded('items')),
   ```
-  แสดงสินค้าในใบสั่งซื้อ
+  เนเธชเธ”เธเธชเธดเธเธเนเธฒเนเธเนเธเธชเธฑเนเธเธเธทเนเธญ
 
 - **User ? Roles (belongsToMany)**  
   ```php
   'roles' => RoleResource::collection($this->whenLoaded('roles')),
   ```
-  แสดง role ทั้งหมดของ user
+  เนเธชเธ”เธ role เธ—เธฑเนเธเธซเธกเธ”เธเธญเธ user
 
 - **Post ? Comments (morphMany)**  
   ```php
   'comments' => CommentResource::collection($this->whenLoaded('comments')),
   ```
-  แสดงคอมเมนต์ทั้งหมดของโพสต์
+  เนเธชเธ”เธเธเธญเธกเน€เธกเธเธ•เนเธ—เธฑเนเธเธซเธกเธ”เธเธญเธเนเธเธชเธ•เน
 
 ---
 
-## 2) ตาราง Mapping Relation ? การใช้ Resource
+## 2) เธ•เธฒเธฃเธฒเธ Mapping Relation ? เธเธฒเธฃเนเธเน Resource
 
-| ประเภท Relation          | ตัวอย่าง Model ? Relation      | ใช้ Resource แบบไหน |
+| เธเธฃเธฐเน€เธ เธ— Relation          | เธ•เธฑเธงเธญเธขเนเธฒเธ Model ? Relation      | เนเธเน Resource เนเธเธเนเธซเธ |
 |---------------------------|---------------------------------|----------------------|
 | `belongsTo`               | Product ? Category              | `Resource::make()`   |
 | `hasOne`                  | User ? Profile                  | `Resource::make()`   |
@@ -94,9 +94,9 @@
 ---
 
 ## 3) Tips
-- ใช้ `make()` ? เมื่อ relation คืน object เดียว (one-to-one, many-to-one)  
-- ใช้ `collection()` ? เมื่อ relation คืนหลาย object (one-to-many, many-to-many)  
-- ใช้ `whenLoaded('relation')` ? ป้องกัน N+1 และไม่ส่ง relation ที่ไม่ได้ eager load  
-- ใช้ `when()` + `relationLoaded()` ? ถ้าอยากควบคุมละเอียดว่า field จะโชว์เมื่อไร  
+- เนเธเน `make()` ? เน€เธกเธทเนเธญ relation เธเธทเธ object เน€เธ”เธตเธขเธง (one-to-one, many-to-one)  
+- เนเธเน `collection()` ? เน€เธกเธทเนเธญ relation เธเธทเธเธซเธฅเธฒเธข object (one-to-many, many-to-many)  
+- เนเธเน `whenLoaded('relation')` ? เธเนเธญเธเธเธฑเธ N+1 เนเธฅเธฐเนเธกเนเธชเนเธ relation เธ—เธตเนเนเธกเนเนเธ”เน eager load  
+- เนเธเน `when()` + `relationLoaded()` ? เธ–เนเธฒเธญเธขเธฒเธเธเธงเธเธเธธเธกเธฅเธฐเน€เธญเธตเธขเธ”เธงเนเธฒ field เธเธฐเนเธเธงเนเน€เธกเธทเนเธญเนเธฃ  
 
 ---

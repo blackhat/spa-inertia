@@ -17,8 +17,8 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->comment('ไอดีผู้ใช้');
             $table->foreignId('category_id')->constrained()->comment('ไอดีแคตตาลอต');
             $table->string('brand')->comment('แบรนด์สินค้า');
-            $table->unsignedBigInteger('price')->comment('ราคาเป็นสตางค์');
-            $table->unsignedInteger('weight')->comment('น้ำหนักกรัม');
+            $table->integer('price')->check('price >= 0')->comment('ราคาเป็นสตางค์');
+            $table->decimal('weight', 8, 2)->comment('น้ำหนักกรัม');
             $table->text('description')->comment('คำบรรยายสินค้า');
             $table->timestamps();
             $table->comment('ตารางสินค้า');

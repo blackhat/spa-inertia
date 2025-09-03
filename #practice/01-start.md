@@ -19,11 +19,11 @@ php artisan make:migration add_price_to_products_table --table=products
 public function up(): void
 {
     Schema::table('products', function (Blueprint $table) {
-        $table->integer('stock')->after('price'); // µ—«Õ¬Ë“ß‡æ‘Ë¡ø‘≈¥Ï
+        $table->integer('stock')->after('price'); // ‡∏ï‡∏±‡∏ß‡∏≠‡∏¢‡πà‡∏≤‡∏á‡πÄ‡∏û‡∏¥‡πà‡∏°‡∏ü‡∏¥‡∏•‡∏î‡πå
     });
 }
 ```
-À¡“¬‡Àµÿ: ∂È“®– rename/drop column ∫“ß°√≥’Õ“®µÈÕßµ‘¥µ—Èß doctrine/dbal
+‡∏´‡∏°‡∏≤‡∏¢‡πÄ‡∏´‡∏ï‡∏∏: ‡∏ñ‡πâ‡∏≤‡∏à‡∏∞ rename/drop column ‡∏ö‡∏≤‡∏á‡∏Å‡∏£‡∏ì‡∏µ‡∏≠‡∏≤‡∏à‡∏ï‡πâ‡∏≠‡∏á‡∏ï‡∏¥‡∏î‡∏ï‡∏±‡πâ‡∏á doctrine/dbal
 ```bash
 composer require --dev doctrine/dbal
 ```

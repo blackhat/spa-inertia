@@ -1,16 +1,16 @@
 # Database Schema Design Checklist (Laravel 12 + ERP Context)
 
-## 1. พื้นฐานที่ต้องเข้าใจ
-- ? Relational Database Concept: ตาราง, แถว, คอลัมน์, Primary Key (PK), Foreign Key (FK)
+## 1. เธเธทเนเธเธเธฒเธเธ—เธตเนเธ•เนเธญเธเน€เธเนเธฒเนเธ
+- ? Relational Database Concept: เธ•เธฒเธฃเธฒเธ, เนเธ–เธง, เธเธญเธฅเธฑเธกเธเน, Primary Key (PK), Foreign Key (FK)
 - ? Data Types: `string`, `text`, `integer`, `decimal`, `boolean`, `date`, `timestamp`
 - ? Naming Convention:
-  - ตารางใช้ **พหูพจน์** (products, categories)
-  - PK มาตรฐานเป็น `id`
-  - FK เป็น `xxx_id` (user_id, category_id)
+  - เธ•เธฒเธฃเธฒเธเนเธเน **เธเธซเธนเธเธเธเน** (products, categories)
+  - PK เธกเธฒเธ•เธฃเธเธฒเธเน€เธเนเธ `id`
+  - FK เน€เธเนเธ `xxx_id` (user_id, category_id)
 
 ---
 
-## 2. ความสัมพันธ์ (Relationships)
+## 2. เธเธงเธฒเธกเธชเธฑเธกเธเธฑเธเธเน (Relationships)
 - **One-to-Many**:  
   - User ? Products  
   - Category ? Products
@@ -23,71 +23,71 @@
 
 ---
 
-## 3. ลำดับการสร้าง Migration
-- Parent ก่อน Child  
+## 3. เธฅเธณเธ”เธฑเธเธเธฒเธฃเธชเธฃเนเธฒเธ Migration
+- Parent เธเนเธญเธ Child  
   - ? categories  
   - ? users  
-  - ? products (ต้องมาทีหลัง)
-- ถ้ามี pivot ? มาทีหลังสุด
+  - ? products (เธ•เนเธญเธเธกเธฒเธ—เธตเธซเธฅเธฑเธ)
+- เธ–เนเธฒเธกเธต pivot ? เธกเธฒเธ—เธตเธซเธฅเธฑเธเธชเธธเธ”
 
 ---
 
 ## 4. Data Type & Precision
-- **เงิน**: `unsignedBigInteger` (เก็บเป็นสตางค์) หรือ `decimal(12,2)`  
-- **น้ำหนักโลหะ**: `decimal(8,3)` (รองรับทศนิยมละเอียด)  
-- **ข้อความยาว**: ใช้ `text` ไม่ใช้ `string`  
-- **Boolean**: ใช้ `boolean` หรือ `tinyInteger(1)`
+- **เน€เธเธดเธ**: `unsignedBigInteger` (เน€เธเนเธเน€เธเนเธเธชเธ•เธฒเธเธเน) เธซเธฃเธทเธญ `decimal(12,2)`  
+- **เธเนเธณเธซเธเธฑเธเนเธฅเธซเธฐ**: `decimal(8,3)` (เธฃเธญเธเธฃเธฑเธเธ—เธจเธเธดเธขเธกเธฅเธฐเน€เธญเธตเธขเธ”)  
+- **เธเนเธญเธเธงเธฒเธกเธขเธฒเธง**: เนเธเน `text` เนเธกเนเนเธเน `string`  
+- **Boolean**: เนเธเน `boolean` เธซเธฃเธทเธญ `tinyInteger(1)`
 
 ---
 
 ## 5. Constraints & Index
 - **Primary Key (PK)** ? `id()`
 - **Foreign Key (FK)** ? `foreignId('category_id')->constrained()`
-- **Unique** ? `unique()` เช่น email
-- **Index** ? `index()` สำหรับ column ที่ query บ่อย เช่น code, name
+- **Unique** ? `unique()` เน€เธเนเธ email
+- **Index** ? `index()` เธชเธณเธซเธฃเธฑเธ column เธ—เธตเน query เธเนเธญเธข เน€เธเนเธ code, name
 
 ---
 
 ## 6. Best Practices
-- ใส่ `->comment('...')` ทุกคอลัมน์ (อ่านง่าย, ช่วยเวลา audit)
-- แยก `created_at`, `updated_at` ? ใช้ `$table->timestamps()`
-- ใช้ soft delete ถ้าต้องการกู้คืน ? `$table->softDeletes()`
-- คิดเรื่อง scale:
+- เนเธชเน `->comment('...')` เธ—เธธเธเธเธญเธฅเธฑเธกเธเน (เธญเนเธฒเธเธเนเธฒเธข, เธเนเธงเธขเน€เธงเธฅเธฒ audit)
+- เนเธขเธ `created_at`, `updated_at` ? เนเธเน `$table->timestamps()`
+- เนเธเน soft delete เธ–เนเธฒเธ•เนเธญเธเธเธฒเธฃเธเธนเนเธเธทเธ ? `$table->softDeletes()`
+- เธเธดเธ”เน€เธฃเธทเนเธญเธ scale:
   - product code ? unique
   - category tree ? parent_id + nested set / recursive query
-  - search ? อาจต้องเพิ่ม fulltext index หรือ vector search
+  - search ? เธญเธฒเธเธ•เนเธญเธเน€เธเธดเนเธก fulltext index เธซเธฃเธทเธญ vector search
 
 ---
 
 ## 7. Seeder & Factory
-- Parent ? Child เช่น สร้าง Categories ก่อน Products
-- Factory ใช้ `state()` สำหรับผูก FK แบบ dynamic
-- ใช้ `DatabaseSeeder` รวมลำดับการ seed
+- Parent ? Child เน€เธเนเธ เธชเธฃเนเธฒเธ Categories เธเนเธญเธ Products
+- Factory เนเธเน `state()` เธชเธณเธซเธฃเธฑเธเธเธนเธ FK เนเธเธ dynamic
+- เนเธเน `DatabaseSeeder` เธฃเธงเธกเธฅเธณเธ”เธฑเธเธเธฒเธฃ seed
 
 ---
 
-## 8. Workflow ที่แนะนำ (สำหรับ ERP2AI/ระบบจริง)
-1. **ออกแบบ schema บนกระดาษ/diagrams** (ERD)
-2. **สร้าง migration ตามลำดับ** (parent ? child)
-3. **ใส่ relation ใน model**
-4. **ทำ factory/seeder**
-5. **ทดสอบ migrate:fresh --seed**
-6. **ปรับแก้ schema ให้ครบก่อนลงข้อมูลจริง**
+## 8. Workflow เธ—เธตเนเนเธเธฐเธเธณ (เธชเธณเธซเธฃเธฑเธ ERP2AI/เธฃเธฐเธเธเธเธฃเธดเธ)
+1. **เธญเธญเธเนเธเธ schema เธเธเธเธฃเธฐเธ”เธฒเธฉ/diagrams** (ERD)
+2. **เธชเธฃเนเธฒเธ migration เธ•เธฒเธกเธฅเธณเธ”เธฑเธ** (parent ? child)
+3. **เนเธชเน relation เนเธ model**
+4. **เธ—เธณ factory/seeder**
+5. **เธ—เธ”เธชเธญเธ migrate:fresh --seed**
+6. **เธเธฃเธฑเธเนเธเน schema เนเธซเนเธเธฃเธเธเนเธญเธเธฅเธเธเนเธญเธกเธนเธฅเธเธฃเธดเธ**
 
 ---
 
-## 9. เครื่องมือเสริม
+## 9. เน€เธเธฃเธทเนเธญเธเธกเธทเธญเน€เธชเธฃเธดเธก
 - ERD Tools: dbdiagram.io, draw.io, MySQL Workbench
-- Laravel Package: `doctrine/dbal` (สำหรับแก้ไข column)
-- Migration squashing (ลดไฟล์เก่า): `php artisan schema:dump`
+- Laravel Package: `doctrine/dbal` (เธชเธณเธซเธฃเธฑเธเนเธเนเนเธ column)
+- Migration squashing (เธฅเธ”เนเธเธฅเนเน€เธเนเธฒ): `php artisan schema:dump`
 
 ---
 
-## 10. ข้อผิดพลาดที่เจอบ่อย
-- ? ลำดับ migration สลับ (child ก่อน parent)
-- ? ชนิดข้อมูล FK ไม่ตรง (bigint vs int)
-- ? ลืมใส่ index ? query ช้า
-- ? เก็บเงินเป็น float ? ค่าคลาดเคลื่อน
-- ? ออกแบบ schema ตามโค้ด ? ไม่ได้เผื่อ scale ธุรกิจ
+## 10. เธเนเธญเธเธดเธ”เธเธฅเธฒเธ”เธ—เธตเนเน€เธเธญเธเนเธญเธข
+- ? เธฅเธณเธ”เธฑเธ migration เธชเธฅเธฑเธ (child เธเนเธญเธ parent)
+- ? เธเธเธดเธ”เธเนเธญเธกเธนเธฅ FK เนเธกเนเธ•เธฃเธ (bigint vs int)
+- ? เธฅเธทเธกเนเธชเน index ? query เธเนเธฒ
+- ? เน€เธเนเธเน€เธเธดเธเน€เธเนเธ float ? เธเนเธฒเธเธฅเธฒเธ”เน€เธเธฅเธทเนเธญเธ
+- ? เธญเธญเธเนเธเธ schema เธ•เธฒเธกเนเธเนเธ” ? เนเธกเนเนเธ”เนเน€เธเธทเนเธญ scale เธเธธเธฃเธเธดเธ
 
 ---

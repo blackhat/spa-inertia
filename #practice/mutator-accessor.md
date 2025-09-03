@@ -1,20 +1,20 @@
-# ERP2AI Handbook � Accessors & Mutators (Laravel 12)
+# ERP2AI Handbook — Accessors & Mutators (Laravel 12)
 
-> ����� Model �� ���鹡�ҧ�Ѩ����Д �Ѵ��� data format �͹���-�͡ DB ������з� logic ������
-
----
-
-## 1) ��ѡ���
-- **Mutator (setXxxAttribute)** ? �Ѵ��ä�ҡ�͹ **�ѹ�֡ŧ DB**  
-- **Accessor (getXxxAttribute)** ? �Ѵ��ä�ҡ�͹ **���͡�ҡ Model**
-
-**��ʹ�**
-- ��¹ logic ��������ǔ ? ����ء��� (Factory, Controller, API, Vue ��ҹ Inertia)
-- DB �红����ŴԺẺ������� ���� app ���¡���дǡ
+> ทำให้ Model เป็น “ชั้นกลางอัจฉริยะ” จัดการ data format ตอนเข้า-ออก DB โดยไม่กระทบ logic ที่อื่น
 
 ---
 
-## 2) ������ҧ: �Ҥ� (����ʵҧ�� �����¡�繺ҷ)
+## 1) หลักการ
+- **Mutator (setXxxAttribute)** ? จัดการค่าก่อน **บันทึกลง DB**  
+- **Accessor (getXxxAttribute)** ? จัดการค่าก่อน **ส่งออกจาก Model**
+
+**ข้อดี**
+- เขียน logic “ครั้งเดียว” ? ใช้ได้ทุกที่ (Factory, Controller, API, Vue ผ่าน Inertia)
+- DB เก็บข้อมูลดิบแบบเหมาะสม แต่ฝั่ง app เรียกใช้สะดวก
+
+---
+
+## 2) ตัวอย่าง: ราคา (เก็บเป็นสตางค์ แต่เรียกเป็นบาท)
 ```php
 class Product extends Model
 {
@@ -22,19 +22,19 @@ class Product extends Model
 
     protected $fillable = ['name','price','brand','weight','description','category_id','user_id'];
 
-    // Mutator ? save ��ʵҧ��
+    // Mutator ? save เป็นสตางค์
     public function setPriceAttribute($value): void
     {
         $this->attributes['price'] = (int) round($value * 100);
     }
 
-    // Accessor ? read �繺ҷ
+    // Accessor ? read เป็นบาท
     public function getPriceAttribute($value): float
     {
         return $value / 100;
     }
 
-    // Accessor ? �Ҥ� format string
+    // Accessor ? ราคา format string
     public function getPriceFormattedAttribute(): string
     {
         return number_format($this->price, 2);
@@ -42,26 +42,26 @@ class Product extends Model
 }
 ```
 
-**���Ѿ��**
+**ผลลัพธ์**
 ```php
 Product::create(['name'=>'Ring','price'=>199.99]);
-// DB ��: 19999
+// DB เก็บ: 19999
 $product->price;            // 199.99
 $product->price_formatted;  // "199.99"
 ```
 
 ---
 
-## 3) ������ҧ: �ٻ�Ҿ (������� �����¡ URL)
+## 3) ตัวอย่าง: รูปภาพ (เก็บไฟล์เนม แต่เรียก URL)
 ```php
 class Product extends Model
 {
     protected $fillable = ['name','image'];
 
-    // Mutator ? ��੾�Ъ������
+    // Mutator ? เก็บเฉพาะชื่อไฟล์
     public function setImageAttribute($value): void
     {
-        // ���������ѻ��Ŵ
+        // ถ้าเป็นไฟล์อัปโหลด
         if ($value instanceof \Illuminate\Http\UploadedFile) {
             $path = $value->store('products','public');
             $this->attributes['image'] = $path;
@@ -70,7 +70,7 @@ class Product extends Model
         }
     }
 
-    // Accessor ? �׹��� URL �������ҹ
+    // Accessor ? คืนค่า URL พร้อมใช้งาน
     public function getImageUrlAttribute(): string
     {
         return $this->image
@@ -80,7 +80,7 @@ class Product extends Model
 }
 ```
 
-**���Ѿ��**
+**ผลลัพธ์**
 ```php
 $product = Product::find(1);
 $product->image;     // "products/abc123.jpg"
@@ -89,7 +89,7 @@ $product->image_url; // "https://yourapp.test/storage/products/abc123.jpg"
 
 ---
 
-## 4) ������ҧ: ʶҹ� (���繵���Ţ �����¡�繢�ͤ���)
+## 4) ตัวอย่าง: สถานะ (เก็บเป็นตัวเลข แต่เรียกเป็นข้อความ)
 ```php
 class Order extends Model
 {
@@ -99,7 +99,7 @@ class Order extends Model
     const STATUS_APPROVED  = 1;
     const STATUS_REJECTED  = 2;
 
-    // Accessor ? �ŧ�� label
+    // Accessor ? แปลงเป็น label
     public function getStatusLabelAttribute(): string
     {
         return match($this->status) {
@@ -112,7 +112,7 @@ class Order extends Model
 }
 ```
 
-**���Ѿ��**
+**ผลลัพธ์**
 ```php
 $order->status;       // 1
 $order->status_label; // "Approved"
@@ -120,27 +120,27 @@ $order->status_label; // "Approved"
 
 ---
 
-## 5) Checklist ����� Accessor/Mutator
-- [ ] ������� �DB ��Ẻ˹�� ������ҹ��ͧ����աẺ�
-- [ ] ��駪��� attribute ��� **���ͤ�������** (`price_formatted`, `image_url`)
-- [ ] ����Ѵ logic ˹ѡ � � accessor (����� format �� � ��ҹ��)
-- [ ] ��� type �ͧ��ҷ�� return (`float`, `string`) ���� consistency
-- [ ] ���ͺ���� seeder/factory ���������� logic ���ѧ
+## 5) Checklist การใช้ Accessor/Mutator
+- [ ] ใช้เมื่อ “DB เก็บแบบหนึ่ง แต่การใช้งานต้องการอีกแบบ”
+- [ ] ตั้งชื่อ attribute ให้ **สื่อความหมาย** (`price_formatted`, `image_url`)
+- [ ] ไม่ยัด logic หนัก ๆ ใน accessor (ควรเป็น format เบา ๆ เท่านั้น)
+- [ ] คุม type ของค่าที่ return (`float`, `string`) เพื่อ consistency
+- [ ] ทดสอบด้วย seeder/factory ให้มั่นใจว่า logic ไม่พัง
 
 ---
 
 ## 6) Common Mistakes
-- ? ��¹ logic format � Controller ? ��ӫ�͹
-- ? ��� Vue/Frontend 仨Ѵ����ͧ ? ����ʹ���ͧ����к�
-- ? ��� type cast ? �� string/float ��Ѻ�ѹ
-- ? ��� logic business (�� �ӹǳ����) ���� accessor ? ����� query ˹ѡ
+- ? เขียน logic format ใน Controller ? ซ้ำซ้อน
+- ? ให้ Vue/Frontend ไปจัดการเอง ? ไม่สอดคล้องทั้งระบบ
+- ? ลืม type cast ? ได้ string/float สลับกัน
+- ? เอา logic business (เช่น คำนวณภาษี) ไปใส่ accessor ? ทำให้ query หนัก
 
 ---
 
 ## 7) Best Practice (ERP Context)
-- **�Թ** ? DB �� �ʵҧ�� (int), accessor �׹ ��ҷ� (float/string)
-- **�ٻ�Ҿ/���** ? DB �� path, accessor �׹ URL
-- **ʶҹ�** ? DB �� code/enum, accessor �׹ label (����/����ҹ)
-- **�ѹ���** ? DB �� timestamp, accessor �׹ format ��§�� (�� `d/m/Y`)
+- **เงิน** ? DB เก็บ “สตางค์” (int), accessor คืน “บาท” (float/string)
+- **รูปภาพ/ไฟล์** ? DB เก็บ path, accessor คืน URL
+- **สถานะ** ? DB เก็บ code/enum, accessor คืน label (ภาษา/คำอ่าน)
+- **วันที่** ? DB เก็บ timestamp, accessor คืน format สวยงาม (เช่น `d/m/Y`)
 
 ---

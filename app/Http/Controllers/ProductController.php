@@ -13,10 +13,24 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $products = auth()->user()->products()->with('category')->latest()->paginate(5);
-        // $products = Product::with('category')->paginate(10);
+        $products = auth()->user()
+            ->products()
+            ->with('category')
+            ->latest()
+            ->where(function ($query) {
+                if ($search = request()->search) {
+                    $query->where('name', 'like', '%' . $search. '%')
+                        ->orWhereHas('category', function ($query) use ($search) {
+                            $query->where('name', 'like', '%' . $search . '%');
+                    });
+                }
+            })
+            ->paginate(5)
+            ->withQueryString();
+
         return inertia('Product/Index', [
             'products' => $products->toResourceCollection(),
+            'query' => (object) request()->query(),
         ]);
 
     }

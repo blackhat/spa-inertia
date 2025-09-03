@@ -1,10 +1,10 @@
-# ERP2AI Handbook — Best Practices (Laravel 12 + Inertia 2 + Vue 3)
+# ERP2AI Handbook โ€” Best Practices (Laravel 12 + Inertia 2 + Vue 3)
 
-> โฟกัส “หลักการ+เช็กลิสต์พร้อมใช้” ไม่พาลัด scaffold
+> เนเธเธเธฑเธช โ€เธซเธฅเธฑเธเธเธฒเธฃ+เน€เธเนเธเธฅเธดเธชเธ•เนเธเธฃเนเธญเธกเนเธเนโ€ เนเธกเนเธเธฒเธฅเธฑเธ” scaffold
 
 ---
 
-## 0) โครงสร้างโปรเจกต์ (ย่อ)
+## 0) เนเธเธฃเธเธชเธฃเนเธฒเธเนเธเธฃเน€เธเธเธ•เน (เธขเนเธญ)
 ```
 app/
   Models/
@@ -24,59 +24,59 @@ resources/js/
   components/*.vue
   composables/*.ts
 ```
-- แยกโค้ด **ตามโดเมน** (กติกา ERP2AI)
-- ใช้ **FormRequest**, **Service/Action** แยก business logic ออก
+- เนเธขเธเนเธเนเธ” **เธ•เธฒเธกเนเธ”เน€เธกเธ** (เธเธ•เธดเธเธฒ ERP2AI)
+- เนเธเน **FormRequest**, **Service/Action** เนเธขเธ business logic เธญเธญเธ
 
 ---
 
-## 1) Schema Design (สรุปเข้ม)
-- ตารางใช้ **พหูพจน์**, PK = `id()`, FK = `foreignId`
-- **ลำดับ migration**: Parent ? Child ? Pivot
-- เงิน: `unsignedBigInteger` (สตางค์) หรือ `decimal(12,2)` (เลือกแนวทางเดียวทั้งระบบ)
-- น้ำหนักโลหะ: `decimal(8,3)` (ทองละเอียดได้)
-- ใส่ `->comment()` ทุกคอลัมน์/ตาราง
+## 1) Schema Design (เธชเธฃเธธเธเน€เธเนเธก)
+- เธ•เธฒเธฃเธฒเธเนเธเน **เธเธซเธนเธเธเธเน**, PK = `id()`, FK = `foreignId`
+- **เธฅเธณเธ”เธฑเธ migration**: Parent ? Child ? Pivot
+- เน€เธเธดเธ: `unsignedBigInteger` (เธชเธ•เธฒเธเธเน) เธซเธฃเธทเธญ `decimal(12,2)` (เน€เธฅเธทเธญเธเนเธเธงเธ—เธฒเธเน€เธ”เธตเธขเธงเธ—เธฑเนเธเธฃเธฐเธเธ)
+- เธเนเธณเธซเธเธฑเธเนเธฅเธซเธฐ: `decimal(8,3)` (เธ—เธญเธเธฅเธฐเน€เธญเธตเธขเธ”เนเธ”เน)
+- เนเธชเน `->comment()` เธ—เธธเธเธเธญเธฅเธฑเธกเธเน/เธ•เธฒเธฃเธฒเธ
 - Index:
-  - `unique()` กับ code/slug/email
-  - `index()` กับคอลัมน์ที่ query บ่อย (status, date, fk)
-- Soft delete เมื่อ “ต้องเก็บประวัติ”: `$table->softDeletes()`
-- ตัวอย่าง
+  - `unique()` เธเธฑเธ code/slug/email
+  - `index()` เธเธฑเธเธเธญเธฅเธฑเธกเธเนเธ—เธตเน query เธเนเธญเธข (status, date, fk)
+- Soft delete เน€เธกเธทเนเธญ โ€เธ•เนเธญเธเน€เธเนเธเธเธฃเธฐเธงเธฑเธ•เธดโ€: `$table->softDeletes()`
+- เธ•เธฑเธงเธญเธขเนเธฒเธ
 ```php
 Schema::create('categories', function (Blueprint $t) {
   $t->id();
-  $t->string('name')->index()->comment('ชื่อหมวด');
+  $t->string('name')->index()->comment('เธเธทเนเธญเธซเธกเธงเธ”');
   $t->timestamps();
-  $t->comment('หมวดสินค้า');
+  $t->comment('เธซเธกเธงเธ”เธชเธดเธเธเนเธฒ');
 });
 
 Schema::create('products', function (Blueprint $t) {
   $t->id()->comment('PK');
-  $t->string('name')->index()->comment('ชื่อสินค้า');
-  $t->foreignId('user_id')->constrained()->comment('เจ้าของข้อมูล');
-  $t->foreignId('category_id')->constrained()->comment('หมวด');
-  $t->string('brand')->nullable()->comment('แบรนด์');
-  $t->unsignedBigInteger('price')->comment('ราคา(สตางค์)');
-  $t->decimal('weight', 8, 3)->default(0)->comment('กรัม');
-  $t->text('description')->nullable()->comment('คำอธิบาย');
+  $t->string('name')->index()->comment('เธเธทเนเธญเธชเธดเธเธเนเธฒ');
+  $t->foreignId('user_id')->constrained()->comment('เน€เธเนเธฒเธเธญเธเธเนเธญเธกเธนเธฅ');
+  $t->foreignId('category_id')->constrained()->comment('เธซเธกเธงเธ”');
+  $t->string('brand')->nullable()->comment('เนเธเธฃเธเธ”เน');
+  $t->unsignedBigInteger('price')->comment('เธฃเธฒเธเธฒ(เธชเธ•เธฒเธเธเน)');
+  $t->decimal('weight', 8, 3)->default(0)->comment('เธเธฃเธฑเธก');
+  $t->text('description')->nullable()->comment('เธเธณเธญเธเธดเธเธฒเธข');
   $t->timestamps();
   $t->softDeletes();
-  $t->comment('ตารางสินค้า');
+  $t->comment('เธ•เธฒเธฃเธฒเธเธชเธดเธเธเนเธฒ');
 });
 ```
 
 **Common Mistakes**
-- สลับลำดับ migration ? FK พัง
-- ชนิดคอลัมน์ของ FK ไม่ตรงกับ PK
-- เก็บเงินเป็น `float` ? คลาดเคลื่อน
+- เธชเธฅเธฑเธเธฅเธณเธ”เธฑเธ migration ? FK เธเธฑเธ
+- เธเธเธดเธ”เธเธญเธฅเธฑเธกเธเนเธเธญเธ FK เนเธกเนเธ•เธฃเธเธเธฑเธ PK
+- เน€เธเนเธเน€เธเธดเธเน€เธเนเธ `float` ? เธเธฅเธฒเธ”เน€เธเธฅเธทเนเธญเธ
 
 ---
 
-## 2) Seeder & Factory (สร้างข้อมูลจำลอง “มี FK ถูกลำดับ”)
-**หลัก**
-- Seed “Parent ก่อน Child”
-- ใช้ `state()` ผูก FK แบบสุ่มจากชุดที่มีอยู่
-- ใส่ปริมาณพอทดสอบ pagination/filter ได้ (เช่น 100–500 แถว)
+## 2) Seeder & Factory (เธชเธฃเนเธฒเธเธเนเธญเธกเธนเธฅเธเธณเธฅเธญเธ โ€เธกเธต FK เธ–เธนเธเธฅเธณเธ”เธฑเธโ€)
+**เธซเธฅเธฑเธ**
+- Seed โ€Parent เธเนเธญเธ Childโ€
+- เนเธเน `state()` เธเธนเธ FK เนเธเธเธชเธธเนเธกเธเธฒเธเธเธธเธ”เธ—เธตเนเธกเธตเธญเธขเธนเน
+- เนเธชเนเธเธฃเธดเธกเธฒเธ“เธเธญเธ—เธ”เธชเธญเธ pagination/filter เนเธ”เน (เน€เธเนเธ 100โ€“500 เนเธ–เธง)
 
-**ตัวอย่าง**
+**เธ•เธฑเธงเธญเธขเนเธฒเธ**
 ```php
 // CategoryFactory
 return ['name' => fake()->unique()->word()];
@@ -85,8 +85,8 @@ return ['name' => fake()->unique()->word()];
 return [
   'name' => fake()->unique()->sentence(3),
   'brand' => fake()->company(),
-  'price' => fake()->numberBetween(1000, 500000), // 10–5,000 บาท (สตางค์)
-  'weight' => fake()->randomFloat(3, 0, 50),      // 0–50 กรัม
+  'price' => fake()->numberBetween(1000, 500000), // 10โ€“5,000 เธเธฒเธ— (เธชเธ•เธฒเธเธเน)
+  'weight' => fake()->randomFloat(3, 0, 50),      // 0โ€“50 เธเธฃเธฑเธก
   'description' => fake()->optional()->text(200),
 ];
 
@@ -102,19 +102,19 @@ $categories = \App\Models\Catalog\Category::factory(10)->create();
 ```
 
 **Checklist**
-- [ ] ใช้ `unique()` กับค่าที่ต้องไม่ซ้ำ
-- [ ] ไม่ seed ข้อมูล “สกปรก” ที่ละเมิด constraint
-- [ ] `migrate:fresh --seed` ต้องผ่านรวดเดียว
+- [ ] เนเธเน `unique()` เธเธฑเธเธเนเธฒเธ—เธตเนเธ•เนเธญเธเนเธกเนเธเนเธณ
+- [ ] เนเธกเน seed เธเนเธญเธกเธนเธฅ โ€เธชเธเธเธฃเธโ€ เธ—เธตเนเธฅเธฐเน€เธกเธดเธ” constraint
+- [ ] `migrate:fresh --seed` เธ•เนเธญเธเธเนเธฒเธเธฃเธงเธ”เน€เธ”เธตเธขเธง
 
 ---
 
-## 3) Request & Validation (FormRequest เป็นมาตรฐาน)
-**หลัก**
-- ไม่ยัด validation ใน Controller
-- ใช้ rule สั้น กระชับ, สอดคล้อง schema
-- ระวัง **การอัปเดต** (unique:ignore)
+## 3) Request & Validation (FormRequest เน€เธเนเธเธกเธฒเธ•เธฃเธเธฒเธ)
+**เธซเธฅเธฑเธ**
+- เนเธกเนเธขเธฑเธ” validation เนเธ Controller
+- เนเธเน rule เธชเธฑเนเธ เธเธฃเธฐเธเธฑเธ, เธชเธญเธ”เธเธฅเนเธญเธ schema
+- เธฃเธฐเธงเธฑเธ **เธเธฒเธฃเธญเธฑเธเน€เธ”เธ•** (unique:ignore)
 
-**ตัวอย่าง**
+**เธ•เธฑเธงเธญเธขเนเธฒเธ**
 ```php
 class StoreProductRequest extends FormRequest {
   public function rules(): array {
@@ -122,21 +122,21 @@ class StoreProductRequest extends FormRequest {
       'name' => ['required','string','max:255'],
       'brand' => ['nullable','string','max:255'],
       'category_id' => ['required','exists:categories,id'],
-      'price' => ['required','integer','min:0'],       // สตางค์
-      'weight' => ['nullable','numeric','min:0'],      // กรัม (ทศนิยมได้)
+      'price' => ['required','integer','min:0'],       // เธชเธ•เธฒเธเธเน
+      'weight' => ['nullable','numeric','min:0'],      // เธเธฃเธฑเธก (เธ—เธจเธเธดเธขเธกเนเธ”เน)
       'description' => ['nullable','string','max:5000'],
     ];
   }
 }
 ```
 **Checklist**
-- [ ] ใช้ `FormRequest` เสมอ
-- [ ] ตรวจ `exists` กับ FK ทุกตัว
-- [ ] แยก rule “create vs update” ให้ชัด
+- [ ] เนเธเน `FormRequest` เน€เธชเธกเธญ
+- [ ] เธ•เธฃเธงเธ `exists` เธเธฑเธ FK เธ—เธธเธเธ•เธฑเธง
+- [ ] เนเธขเธ rule โ€create vs updateโ€ เนเธซเนเธเธฑเธ”
 
 ---
 
-## 4) Relation & Query (Eloquent อย่างมีสติ)
+## 4) Relation & Query (Eloquent เธญเธขเนเธฒเธเธกเธตเธชเธ•เธด)
 **Model**
 ```php
 class Product extends Model {
@@ -152,9 +152,9 @@ class Category extends Model {
 ```
 
 **Query Best Practices**
-- ใช้ `with()` ป้องกัน N+1
-- จำกัดคอลัมน์ด้วย `select()` เมื่อ data กว้าง
-- แยก **scope** สำหรับ filter/sort ให้ reuse ได้
+- เนเธเน `with()` เธเนเธญเธเธเธฑเธ N+1
+- เธเธณเธเธฑเธ”เธเธญเธฅเธฑเธกเธเนเธ”เนเธงเธข `select()` เน€เธกเธทเนเธญ data เธเธงเนเธฒเธ
+- เนเธขเธ **scope** เธชเธณเธซเธฃเธฑเธ filter/sort เนเธซเน reuse เนเธ”เน
 
 ```php
 // In Product model
@@ -173,7 +173,7 @@ public function scopeSort($q, $col='created_at', $dir='desc') {
 }
 ```
 
-**ตัวอย่าง Controller (Index)**
+**เธ•เธฑเธงเธญเธขเนเธฒเธ Controller (Index)**
 ```php
 $query = Product::query()
   ->with(['category:id,name','user:id,name'])
@@ -186,14 +186,14 @@ $products = $query->paginate(15)->withQueryString();
 ---
 
 ## 5) Migration Tricks & Refactor
-- เปลี่ยนคอลัมน์: `composer require doctrine/dbal` ? ใช้ `->change()`
-- เพิ่ม FK ภายหลัง (หากลำดับยาก):
-  - migration A: สร้างคอลัมน์ธรรมดา
-  - migration B: เพิ่ม constraint
-- Dump schema ลดไฟล์เก่า: `php artisan schema:dump`
-- ใช้ `enum`/`string` ชัดเจนกับสถานะงาน, และมี mapping ในโค้ด
+- เน€เธเธฅเธตเนเธขเธเธเธญเธฅเธฑเธกเธเน: `composer require doctrine/dbal` ? เนเธเน `->change()`
+- เน€เธเธดเนเธก FK เธ เธฒเธขเธซเธฅเธฑเธ (เธซเธฒเธเธฅเธณเธ”เธฑเธเธขเธฒเธ):
+  - migration A: เธชเธฃเนเธฒเธเธเธญเธฅเธฑเธกเธเนเธเธฃเธฃเธกเธ”เธฒ
+  - migration B: เน€เธเธดเนเธก constraint
+- Dump schema เธฅเธ”เนเธเธฅเนเน€เธเนเธฒ: `php artisan schema:dump`
+- เนเธเน `enum`/`string` เธเธฑเธ”เน€เธเธเธเธฑเธเธชเธ–เธฒเธเธฐเธเธฒเธ, เนเธฅเธฐเธกเธต mapping เนเธเนเธเนเธ”
 
-**ตัวอย่างเพิ่ม FK ภายหลัง**
+**เธ•เธฑเธงเธญเธขเนเธฒเธเน€เธเธดเนเธก FK เธ เธฒเธขเธซเธฅเธฑเธ**
 ```php
 Schema::table('products', function (Blueprint $t) {
   $t->foreign('category_id')->references('id')->on('categories');
@@ -202,13 +202,13 @@ Schema::table('products', function (Blueprint $t) {
 
 ---
 
-## 6) Inertia + Vue 3 (ตาราง/ค้นหา/จัดหน้า)
-**หลัก**
-- ส่ง `props` แบบเรียบง่าย: `data`, `meta`, `links`
-- ค้นหา/จัดหน้า ควรใช้ `withQueryString()` ฝั่ง Laravel
-- ปุ่ม “ล้างตัวกรอง” เคลียร์ query ทุกตัว
+## 6) Inertia + Vue 3 (เธ•เธฒเธฃเธฒเธ/เธเนเธเธซเธฒ/เธเธฑเธ”เธซเธเนเธฒ)
+**เธซเธฅเธฑเธ**
+- เธชเนเธ `props` เนเธเธเน€เธฃเธตเธขเธเธเนเธฒเธข: `data`, `meta`, `links`
+- เธเนเธเธซเธฒ/เธเธฑเธ”เธซเธเนเธฒ เธเธงเธฃเนเธเน `withQueryString()` เธเธฑเนเธ Laravel
+- เธเธธเนเธก โ€เธฅเนเธฒเธเธ•เธฑเธงเธเธฃเธญเธโ€ เน€เธเธฅเธตเธขเธฃเน query เธ—เธธเธเธ•เธฑเธง
 
-**ตัวอย่าง ส่งข้อมูลจาก Controller**
+**เธ•เธฑเธงเธญเธขเนเธฒเธ เธชเนเธเธเนเธญเธกเธนเธฅเธเธฒเธ Controller**
 ```php
 return Inertia::render('Catalog/Products/Index', [
   'products' => $products->through(fn($p) => [
@@ -225,56 +225,56 @@ return Inertia::render('Catalog/Products/Index', [
 ```
 
 **Vue Checklist**
-- [ ] รับ `filters` ? bind กับ input
-- [ ] ใช้ `router.get()` พร้อม `{ preserveState: true, replace: true }`
-- [ ] Debounce การค้นหา
+- [ ] เธฃเธฑเธ `filters` ? bind เธเธฑเธ input
+- [ ] เนเธเน `router.get()` เธเธฃเนเธญเธก `{ preserveState: true, replace: true }`
+- [ ] Debounce เธเธฒเธฃเธเนเธเธซเธฒ
 
 ---
 
 ## 7) Transaction & Consistency
-- ธุรกรรมที่แตะหลายตาราง ? ใช้ `DB::transaction()` เสมอ
+- เธเธธเธฃเธเธฃเธฃเธกเธ—เธตเนเนเธ•เธฐเธซเธฅเธฒเธขเธ•เธฒเธฃเธฒเธ ? เนเธเน `DB::transaction()` เน€เธชเธกเธญ
 ```php
 DB::transaction(function () use ($dto) {
   $product = Product::create($dto->toArray());
   // insert related rows...
 });
 ```
-- หลีกเลี่ยง side-effect ใน Controller ? ไปไว้ Service/Action
+- เธซเธฅเธตเธเน€เธฅเธตเนเธขเธ side-effect เนเธ Controller ? เนเธเนเธงเน Service/Action
 
 ---
 
 ## 8) Performance & Scale
-- ตรวจ N+1 ด้วย `->with()` และ Laravel Debugbar (เฉพาะ dev)
-- Index ให้พอเหมาะกับ query จริง
-- ใช้ `chunk()`/`cursor()` กับงาน batch
-- แยก read/write ถ้าโตมาก (อนาคต)
+- เธ•เธฃเธงเธ N+1 เธ”เนเธงเธข `->with()` เนเธฅเธฐ Laravel Debugbar (เน€เธเธเธฒเธฐ dev)
+- Index เนเธซเนเธเธญเน€เธซเธกเธฒเธฐเธเธฑเธ query เธเธฃเธดเธ
+- เนเธเน `chunk()`/`cursor()` เธเธฑเธเธเธฒเธ batch
+- เนเธขเธ read/write เธ–เนเธฒเนเธ•เธกเธฒเธ (เธญเธเธฒเธเธ•)
 
 ---
 
 ## 9) Logging & Audit
-- เก็บ `created_by`, `updated_by` ถ้าต้อง trace ผู้ใช้
-- ใช้ Observer หรือ Model event เพื่อ set ค่าอัตโนมัติ
-- พิจารณาแยกตาราง audit log เมื่อต้องการ history ละเอียด
+- เน€เธเนเธ `created_by`, `updated_by` เธ–เนเธฒเธ•เนเธญเธ trace เธเธนเนเนเธเน
+- เนเธเน Observer เธซเธฃเธทเธญ Model event เน€เธเธทเนเธญ set เธเนเธฒเธญเธฑเธ•เนเธเธกเธฑเธ•เธด
+- เธเธดเธเธฒเธฃเธ“เธฒเนเธขเธเธ•เธฒเธฃเธฒเธ audit log เน€เธกเธทเนเธญเธ•เนเธญเธเธเธฒเธฃ history เธฅเธฐเน€เธญเธตเธขเธ”
 
 ---
 
-## 10) Do & Don’t (สรุป)
+## 10) Do & Donโ€t (เธชเธฃเธธเธ)
 **Do**
-- ออกแบบ ERD ก่อนเขียน migration
+- เธญเธญเธเนเธเธ ERD เธเนเธญเธเน€เธเธตเธขเธ migration
 - Parent ? Child ? Pivot
-- FormRequest ทุกจุดรับ input
-- ใส่ comment/indices อย่างตั้งใจ
-- มี seed ข้อมูลพอทดสอบ
+- FormRequest เธ—เธธเธเธเธธเธ”เธฃเธฑเธ input
+- เนเธชเน comment/indices เธญเธขเนเธฒเธเธ•เธฑเนเธเนเธ
+- เธกเธต seed เธเนเธญเธกเธนเธฅเธเธญเธ—เธ”เธชเธญเธ
 
-**Don’t**
-- ยัด validation ใน Controller
-- เก็บเงินเป็น float
-- ลืม `exists` กับ FK
-- โหลด relation แบบ N+1
-- ปล่อยให้ migration แตกแขนงโดยไม่จัดระเบียบ
+**Donโ€t**
+- เธขเธฑเธ” validation เนเธ Controller
+- เน€เธเนเธเน€เธเธดเธเน€เธเนเธ float
+- เธฅเธทเธก `exists` เธเธฑเธ FK
+- เนเธซเธฅเธ” relation เนเธเธ N+1
+- เธเธฅเนเธญเธขเนเธซเน migration เนเธ•เธเนเธเธเธเนเธ”เธขเนเธกเนเธเธฑเธ”เธฃเธฐเน€เธเธตเธขเธ
 
 ---
-**Command ที่ใช้บ่อย**
+**Command เธ—เธตเนเนเธเนเธเนเธญเธข**
 ```
 php artisan make:model Catalog/Category -mfs
 php artisan make:model Catalog/Product -mfs
@@ -283,4 +283,4 @@ php artisan migrate:fresh --seed
 php artisan schema:dump
 ```
 
-> อ่านจบ = ใช้ได้จริงทั้งทีม (มาตรฐานเดียวกัน) — นี่คือฐานสำหรับ ERP2AI
+> เธญเนเธฒเธเธเธ = เนเธเนเนเธ”เนเธเธฃเธดเธเธ—เธฑเนเธเธ—เธตเธก (เธกเธฒเธ•เธฃเธเธฒเธเน€เธ”เธตเธขเธงเธเธฑเธ) โ€” เธเธตเนเธเธทเธญเธเธฒเธเธชเธณเธซเธฃเธฑเธ ERP2AI
