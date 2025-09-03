@@ -1,49 +1,53 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue'
 import { Head, router } from '@inertiajs/vue3'
+import { ref, watch } from 'vue'
 import { debounce } from 'lodash-es'
 import Pagination from '@/Components/Pagination.vue' 
-import { ref } from 'vue'
+import Sortable from '@/Components/Sortable.vue'
+
+const props = defineProps({
+  products: { type: Object, required: true },
+  // คุณส่งมาจาก controller: 'query' => request()->query()
+  query: { type: Object, default: () => ({ search: '' }) }
+})
 
 const loading = ref(false)
 const startedAt = ref(0)
-const minVisibleMs = 400   // ปรับตามชอบ 300–600
+const minVisibleMs = 400
 
-const props =  defineProps({
-    products: {
-        type: Object,
-        required: true
-    },
-    query: {
-        type: Object,
-        default: () => ({
-            search:''
-        })
-    }
+
+// ✅ อินพุตคุมโดยโลคัลเสมอ
+const search = ref(props.query?.search ?? '')
+
+// ✅ เมื่อ response ใหม่เข้ามา (เปลี่ยนหน้า/โหลดซ้ำ) ค่อย sync ถ้าค่าไม่เท่ากัน
+watch(() => props.query?.search, (v) => {
+  if ((v ?? '') !== search.value) search.value = v ?? ''
 })
 
-const doSearch = debounce((value) => {
-  router.get(route('products.index'), { search: value }, {
-    only: ['products'],
+// ค้นหา (รวม query เดิม + reset page)
+const doSearch = debounce(() => {
+  const url = new URL(window.location.href)
+  const params = Object.fromEntries(url.searchParams.entries())
+  const next = { ...params, search: search.value, page: 1 }
+
+  router.get(route('products.index'), next, {
+    only: ['products','query'],
     preserveState: true,
     preserveScroll: true,
     replace: true,
+    onStart: () => {
+      if (!loading.value) { loading.value = true; startedAt.value = Date.now() }
+    },
     onFinish: () => {
       const elapsed = Date.now() - startedAt.value
-      const remain = Math.max(0, minVisibleMs - elapsed)
-      setTimeout(() => { loading.value = false }, remain)
+      setTimeout(() => { loading.value = false }, Math.max(0, minVisibleMs - elapsed))
     },
   })
 }, 400)
-
+ 
 const handleInput = (e) => {
-  const value = e.target.value
-  // โชว์ทันทีให้ผู้ใช้รู้สึกว่าระบบกำลังทำงาน
-  if (!loading.value) {
-    loading.value = true
-    startedAt.value = Date.now()
-  }
-  doSearch(value)
+  doSearch()
 }
 
  
@@ -79,7 +83,11 @@ const handleInput = (e) => {
                             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"/>
                             </svg>
                         </div>
-                        <input type="text" id="table-search" @input="handleInput"   class="block p-2 pr-8 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500" placeholder="Search for items">
+                        <input type="text" id="table-search" 
+                            v-model="search"
+                            @input="handleInput"
+                            :aria-busy="loading"
+                            class="block p-2 pr-8 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500" placeholder="Search for items">
 
                     </div>
                 </div>
@@ -95,16 +103,16 @@ const handleInput = (e) => {
                                         No.
                                     </th>
                                     <th scope="col" class="px-6 py-3">
-                                        Product name
+                                        <Sortable label="Product name" name="name" :query="query" />
                                     </th>
                                     <th scope="col" class="px-6 py-3">
                                         Category
                                     </th>
-                                    <th scope="col" class="px-6 py-3">
-                                        Price
+                                    <th scope="col" class="px-6 py-3">                                        
+                                        <Sortable label="Price" name="price" :query="query"/>
                                     </th>
                                     <th scope="col" class="px-6 py-3">
-                                        Weight
+                                        <Sortable label="Weight" name="weight" :query="query" /> 
                                     </th>
                                     <th scope="col" class="px-6 py-3">
                                         Action
@@ -194,7 +202,7 @@ const handleInput = (e) => {
                             </tbody>
                         </table>
                         <!-- Nav -->
-                        <Pagination :meta="products.meta" />
+                        <Pagination :meta="products.meta" :query="query"/>
                     </div>
                 </div>
             </div>

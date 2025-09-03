@@ -15,8 +15,7 @@ class ProductController extends Controller
     {
         $products = auth()->user()
             ->products()
-            ->with('category')
-            ->latest()
+            ->with('category') 
             ->where(function ($query) {
                 if ($search = request()->search) {
                     $query->where('name', 'like', '%' . $search. '%')
@@ -24,6 +23,18 @@ class ProductController extends Controller
                             $query->where('name', 'like', '%' . $search . '%');
                     });
                 }
+            })
+            ->when(!request()->query('sort_by'), function ($query) {
+                $query->latest();
+            })
+            ->when(function () {
+                $s = request()->query('sort_by');
+                return $s && in_array(ltrim($s, '-'), ['name','price','weight']); // ตัด '-' ก่อนเช็ค
+            }, function ($query) {
+                $sortBy   = request()->query('sort_by');
+                $field    = ltrim($sortBy, '-');
+                $direction= str_starts_with($sortBy, '-') ? 'desc' : 'asc';
+                $query->orderBy($field, $direction);
             })
             ->paginate(5)
             ->withQueryString();
