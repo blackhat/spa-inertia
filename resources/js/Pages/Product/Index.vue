@@ -50,6 +50,13 @@ const handleInput = (e) => {
   doSearch()
 }
 
+const deleteRow = (id) => {
+    if (window.confirm("Are you sure?")) {
+        router.delete(route('products.destroy', id), {
+            preserveScroll: true,
+        })
+    }
+}
  
 </script>
 
@@ -177,12 +184,14 @@ const handleInput = (e) => {
                                             <!-- Delete -->
                                             <button
                                             class="items-center hidden px-2 py-1 text-sm font-medium text-white bg-red-600 rounded-sm sm:inline-flex hover:bg-red-800"
+                                            @click.prevent="deleteRow(product.id)"
                                             >
                                             Delete
                                             </button>
                                             <button
                                             class="p-2 text-red-600 rounded-md sm:hidden hover:text-red-800"
                                             aria-label="Delete"
+                                            @click.prevent="deleteRow(product.id)"
                                             >
                                             <!-- Heroicon trash -->
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
