@@ -33,7 +33,7 @@ class ProductController extends Controller
             })
             ->when(function () {
                 $s = request()->query('sort_by');
-                return $s && in_array(ltrim($s, '-'), ['name','price','weight']); // à¸•à¸±à¸” '-' à¸ÿà¹ÿà¸­à¸ÿà¹€à¸ÿà¹ÿà¸ÿ
+                return $s && in_array(ltrim($s, '-'), ['name','price','weight']); // à¸•à¸±à¸” '-' ï¿½ï¿½ï¿½ï¿½à¸­ï¿½ï¿½à¹€ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
             }, function ($query) {
                 $sortBy   = request()->query('sort_by');
                 $field    = ltrim($sortBy, '-');

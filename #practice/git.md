@@ -33,3 +33,15 @@ git remote -v
 git status 
 
 git pull origin main
+
+เกิดเพราะมี “งานค้างในเครื่อง” (ทั้งแก้ไฟล์เดิมและไฟล์ใหม่ที่ยังไม่ถูก track) ซึ่งจะถูกทับโดยของรีโมตเวลา pull
+git add -A
+git commit -m "wip: Product Create/Show/Edit + ProductForm (pre-pull)"
+git pull --rebase
+
+ถ้ามีคอนฟลิกต์:
+
+# แก้ไฟล์ที่ขัดกัน → git add <ไฟล์ที่แก้แล้ว>
+git rebase --continue
+
+
