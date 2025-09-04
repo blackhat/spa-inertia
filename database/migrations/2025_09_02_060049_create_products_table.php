@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('brand')->comment('แบรนด์สินค้า');
             $table->integer('price')->check('price >= 0')->comment('ราคาเป็นสตางค์');
             $table->decimal('weight', 8, 2)->comment('น้ำหนักกรัม');
-            $table->text('description')->comment('คำบรรยายสินค้า');
+            $table->text('description')->nullable()->comment('คำบรรยายสินค้า');
             $table->timestamps();
             $table->comment('ตารางสินค้า');
         });

@@ -5,6 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
+use App\Http\Resources\ProductResource;
+use App\Models\Category;
+use Illuminate\Auth\Events\Validated;
+use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
@@ -29,7 +33,7 @@ class ProductController extends Controller
             })
             ->when(function () {
                 $s = request()->query('sort_by');
-                return $s && in_array(ltrim($s, '-'), ['name','price','weight']); // à¸•à¸±à¸” '-' à¸à¹ˆà¸­à¸™à¹€à¸Šà¹‡à¸„
+                return $s && in_array(ltrim($s, '-'), ['name','price','weight']); // à¸•à¸±à¸” '-' à¸ÿà¹ÿà¸­à¸ÿà¹€à¸ÿà¹ÿà¸ÿ
             }, function ($query) {
                 $sortBy   = request()->query('sort_by');
                 $field    = ltrim($sortBy, '-');
@@ -51,15 +55,20 @@ class ProductController extends Controller
      */
     public function create()
     {
-        //
+        $categories = Category::orderBy('name')->get();
+        return inertia('Product/Create', [
+            'categories' => $categories->toResourceCollection()
+        ]);
     }
 
     /**
      * Store a newly created resource in storage.
+     * StoreProductRequest
      */
-    public function store(StoreProductRequest $request)
+    public function store(StoreProductRequest  $request)
     {
-        //
+        $request->user()->products()->create($request->validated());
+        return redirect()->route('products.index');
     }
 
     /**
@@ -67,7 +76,11 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
-        //
+     
+        return inertia('Product/Show', [
+            'product' => $product->load('category')->toResource(),
+        ]);
+ 
     }
 
     /**
@@ -75,7 +88,12 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
-        //
+        $categories = Category::orderBy('name')->get();
+
+        return inertia('Product/Edit', [
+            'product' => $product->load('category')->toResource(),
+            'categories' => $categories->toResourceCollection()
+        ]);
     }
 
     /**
@@ -83,7 +101,9 @@ class ProductController extends Controller
      */
     public function update(UpdateProductRequest $request, Product $product)
     {
-        //
+        $product->update($request->validated());
+
+        return redirect()->route('products.index');
     }
 
     /**

@@ -19,7 +19,8 @@ class ProductFactory extends Factory
         return [
             'name' => fake()->sentence(5),
             'brand' => fake()->sentence(5),
-            'price' => fake()->randomDigitNot(0) * 100,
+            // 'price' => fake()->randomDigitNot(0) * 100,  //ไม่ได้ใช้ mutator, accessor
+            'price' => fake()->randomDigitNot(0),
             'weight' => fake()->randomDigitNot(0),
             'description' => fake()->text(),
         ];

@@ -23,3 +23,13 @@ git remote add origin https://github.com/blackhat/erp2ai.git
 # 6) push ขึ้น main
 git branch -M main
 git push -u origin main
+
+
+
+check before use git
+
+pwd
+git remote -v
+git status 
+
+git pull origin main

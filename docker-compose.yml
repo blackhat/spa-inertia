@@ -1,0 +1,23 @@
+version: "3.8"
+
+services:
+  pg:
+    image: postgres:16
+    container_name: pg
+    environment:
+      POSTGRES_DB: spa_inertia          # ชื่อ DB ที่จะสร้างอัตโนมัติ
+      POSTGRES_USER: postgres        # ชื่อผู้ใช้
+      POSTGRES_PASSWORD: Zaq12wsx # รหัสผ่าน
+      TZ: Asia/Bangkok
+    ports:
+      - "5432:5432"             # ผูกพอร์ตกับเครื่องเรา
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U app -d app"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  pgdata:
