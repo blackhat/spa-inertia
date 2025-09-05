@@ -1,6 +1,7 @@
 <script setup>
+import { ref } from 'vue'
 
-defineProps({
+const props = defineProps({
     form: {
         type: Object,
         required: true
@@ -10,6 +11,17 @@ defineProps({
         required: true
     }
 })
+
+const imagePreview = ref('')
+
+const handleFileChange = (event) => {
+    const image = event.target.files[0]
+    if (!image) {
+        return
+    }
+    props.form.image = image
+    imagePreview.value = URL.createObjectURL(image)
+}
 
 const emit = defineEmits(['submit'])
 </script>
@@ -64,6 +76,39 @@ const emit = defineEmits(['submit'])
                                             />
                                         <div v-if="form.errors.weight" class="mt-2 text-red-500 font-sm">{{ form.errors.weight }}</div>
                                     </div>
+                                    <div class="col-span-6 sm:col-span-6">
+                                        <label for="image" class="block mb-2 text-sm font-medium text-gray-900">Image</label>
+                                        <input
+                                            type="file"
+                                            name="image"
+                                            id="image"
+                                            accept=".jpg,.jpeg,.png,.webp"
+                                            @change="handleFileChange"
+                                            class="shadow-sm border text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5"
+                                            :class="{
+                                            'bg-red-50 border-red-500 text-red-900': form.errors.image,
+                                            'bg-gray-50 border-gray-300 text-gray-900': !form.errors.image
+                                            }"
+                                        />
+
+                                        <div v-if="form.errors.image" class="mt-2 text-sm text-red-500">
+                                            {{ form.errors.image }}
+                                        </div>
+                                        <!-- <progress v-if="form.progress" :value="form.progress.percentage" max="100"
+                                            class="w-full bg-gray-200 rounded-full h-2.5"
+                                        >
+                                            {{ form.progress.percentage }}
+                                        </progress> -->
+
+                                        <div v-if="props.form.progress" class="w-full bg-gray-200 rounded-full h-2.5 mt-2">
+                                            <div
+                                                class="bg-blue-600 h-2.5 rounded-full transition-all"
+                                                :style="{ width: (props.form.progress?.percentage ?? 0) + '%' }"
+                                            />
+                                        </div>
+  
+                                    </div>
+                                    <img class="w-32" :src="imagePreview" v-if="imagePreview"/>
                                     <div class="col-span-6 sm:col-span-6">
                                         <label for="description" class="block mb-2 text-sm font-medium text-gray-900 ">Description</label>
                                         <textarea name="description" v-model="form.description" id="description" 

@@ -14,7 +14,7 @@ class ProductResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        // $price = $this->price / 100; äÁèä´éãªé¡Ã³Õ µÑé§ mutator, accessor ·Õè Model
+        // $price = $this->price / 100; à¹„à¸¡à¹ˆà¹„à¸”à¹‰à¹ƒà¸Šà¹‰à¸à¸£à¸“à¸µ à¸•à¸±à¹‰à¸‡ mutator, accessor à¸—à¸µà¹ˆ Model
         return [
             'id' => $this->id,
             'name' => $this->name,
@@ -23,6 +23,7 @@ class ProductResource extends JsonResource
             'price' => $this->price,
             'price_formatted' => '$'. $this->price,
             'weight' => $this->weight,
+            'image_url' => $this->image_url,
             'description' => $this->description,
             'created_at' => optional($this->created_at)->toISOString(),
         ];

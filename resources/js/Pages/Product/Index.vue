@@ -20,6 +20,9 @@ const minVisibleMs = 400
 // ✅ อินพุตคุมโดยโลคัลเสมอ
 const search = ref(props.query?.search ?? '')
 
+const preview = ref(null)
+
+
 // ✅ เมื่อ response ใหม่เข้ามา (เปลี่ยนหน้า/โหลดซ้ำ) ค่อย sync ถ้าค่าไม่เท่ากัน
 watch(() => props.query?.search, (v) => {
   if ((v ?? '') !== search.value) search.value = v ?? ''
@@ -120,6 +123,9 @@ const deleteRow = (id) => {
                                         <Sortable label="Weight" name="weight" :query="query" /> 
                                     </th>
                                     <th scope="col" class="px-6 py-3">
+                                        Image
+                                    </th>
+                                    <th scope="col" class="px-6 py-3">
                                         Action
                                     </th>
                                 </tr>
@@ -140,6 +146,18 @@ const deleteRow = (id) => {
                                     </td>
                                     <td class="px-6 py-4">
                                         {{ product.weight }}
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        
+                                        
+                                        <img 
+                                            :src="product.image_url || '/images/placeholder.png'"
+                                            class="object-cover w-12 h-12 rounded cursor-zoom-in"
+                                            @click="preview = product.image_url" />
+
+                                        <div v-if="preview" class="fixed inset-0 grid bg-black/60 place-items-center" @click="preview=null">
+                                        <img :src="preview" class="max-h-[80vh] max-w-[90vw] rounded shadow-xl" />
+                                        </div>
                                     </td>
                           
                                     <td class="px-6 py-4 space-x-2">

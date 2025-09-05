@@ -4,11 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use App\Http\Requests\StoreProductRequest;
-use App\Http\Requests\UpdateProductRequest;
-use App\Http\Resources\ProductResource;
-use App\Models\Category;
-use Illuminate\Auth\Events\Validated;
-use Illuminate\Http\Request;
+use App\Http\Requests\UpdateProductRequest; 
+use App\Models\Category; 
+use Illuminate\Support\Str;
+
 
 class ProductController extends Controller
 {
@@ -67,7 +66,22 @@ class ProductController extends Controller
      */
     public function store(StoreProductRequest  $request)
     {
-        $request->user()->products()->create($request->validated());
+        $payload = $request->validated();
+        // dd($payload);
+        if ($request->hasFile('image')) {
+            $folder   = 'images/' . date('Y/m');
+            $ext      = $request->file('image')->getClientOriginalExtension();
+            $fileName = Str::uuid() . '.' . strtolower($ext);
+
+            // เก็บลง disk public => storage/app/public/...
+            // url เรียกใช้ได้ผ่าน Storage::url($path)
+            $path = $request->file('image')->storeAs($folder, $fileName, 'public');
+
+            $payload['image'] = $path;
+        }
+
+        $request->user()->products()->create($payload); 
+
         return redirect()->route('products.index')
             ->with('message', 'Product has been created successfully.');
     }
